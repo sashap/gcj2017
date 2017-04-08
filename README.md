@@ -1,6 +1,5 @@
 # Google Code Jam 2017
 
-
 Qualification Round
 -------------------
 
