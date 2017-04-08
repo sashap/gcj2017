@@ -41,6 +41,8 @@ function solve(N) {
 function solveNaive(N) {
   // Convert string N into array
   let nArray = N.split('');
+  
+  // Check if array is sorted
   return isSorted(nArray);
 }
 
