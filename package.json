@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/sashap/gcj2017#readme",
   "dependencies": {
+    "big-integer": "^1.6.19",
     "fs": "0.0.1-security",
     "glob-fs": "^0.1.6",
     "yargs": "^7.0.2"
