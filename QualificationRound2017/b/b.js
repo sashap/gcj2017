@@ -6,7 +6,6 @@
 // Author: Sasha Parfenov
 
 var readline = require('readline');
-var bigInt = require("big-integer");
 
 // Arguments processing
 var argv = require('yargs')
