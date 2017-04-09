@@ -2,7 +2,7 @@
 
 // Google Code Jam 2017
 // Qualification Round
-// A.  Oversized Pancake Flipper
+// C. Bathroom Stalls
 // Author: Sasha Parfenov
 
 

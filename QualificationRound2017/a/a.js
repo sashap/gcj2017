@@ -66,7 +66,7 @@ rl.on('line', function(line){
 
   for(var i = 0; i < testCases.length; i++){
     var answer = solve(testCases[i]);
-    console.log("Case #" + i + ":", answer);
+    console.log("Case #" + (i + 1) + ":", answer);
   }
 
 });
