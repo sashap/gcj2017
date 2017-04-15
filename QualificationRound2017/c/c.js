@@ -105,7 +105,7 @@ function solveLoop(testCase) {
       var rightIndex = stallGroups.findIndex(function(e){ return e <= right; });
       rightIndex > -1 ? stallGroups.splice(rightIndex, 0, right) : stallGroups.push(right);
     }
-    DEBUG("User:", i, " current: ", current, " left: ", left, " right: ", right, " updated stalls: ", JSON.stringify(stallGroups));
+    DEBUG("User:", (i+1), " current: ", current, " left: ", left, " right: ", right, " remaining stalls: ", JSON.stringify(stallGroups));
   }
   return [left, right];
 }
@@ -125,22 +125,3 @@ function solveMath(testCase) {
 
   return [left.toString(), right.toString()];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
