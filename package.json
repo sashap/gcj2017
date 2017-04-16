@@ -20,6 +20,7 @@
     "big-integer": "^1.6.19",
     "fs": "0.0.1-security",
     "glob-fs": "^0.1.6",
+    "scanf": "^0.7.3",
     "yargs": "^7.0.2"
   }
 }
