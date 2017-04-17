@@ -18,34 +18,55 @@ const scanf = require('scanf');
 const readline = require('readline');
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
+  terminal: false
 });
 
 /**
  *  START
  */
+var inputLines = [];
 
-function processInput() {
-  let result = [];
-  let T = scanf('%d');
-  for (let testCase = 0; testCase < T; testCase++) {
-    result[testCase] = {};
-    result[testCase].numIngredients = scanf('%d');
-    result[testCase].numPackages = scanf('%d');
-    result[testCase].recipe = [];
-    for (let ingredient = 0; ingredient < result[testCase].numIngredients; ingredient++) {
-      result[testCase].recipe.push(scanf('%d'));
+rl.on('line', function(line){
+  inputLines.push(line);
+}).on('close', function(){
+
+  let problems = [];
+  let T = parseInt(inputLines.shift());
+  for (let problem = 0; problem < T; problem++) {
+    let NPLine = inputLines.shift().split(' ');
+    let N = parseInt(NPLine[0]);
+    let P = parseInt(NPLine[1]);
+
+    let recipe = inputLines.shift().split(' ').map((el) => parseInt(el));
+    let packages = [];
+    for (let Q = 0; Q < N; Q++) {
+      packages.push(inputLines.shift().split(' ').map((el) => parseInt(el)));
     }
-    result[testCase].packages = [];
-    for (let pkgRow = 0; pkgRow < result[testCase].numIngredients; pkgRow++) {
-      result[testCase].packages[pkgRow] = [];
-      for (let pkgCol = 0; pkgCol < result[testCase].numPackages; pkgCol++) {
-        result[testCase].packages[pkgRow].push(scanf('%d'));
-      }
-    }
+    problems.push({
+      numIngredients: N,
+      numPackages: P,
+      recipe: recipe,
+      packages: packages
+    });
   }
-  return result;
-}
+
+
+  INFO("Input");
+  INFO("-----");
+  INFO(inputLines.join('\n'));
+  INFO("");
+  DEBUG("Test Cases:", JSON.stringify(problems));
+
+  INFO("Output");
+  INFO("-----");
+  problems.forEach((problem, i) => {
+    DEBUG("Solving case ", (i + 1), "\n", JSON.stringify(problem));
+    let result = solve(problem);
+    console.log("Case #" + (i + 1) + ": " + result);
+  });
+
+});
 
 function solve(problem) {
 
@@ -60,14 +81,21 @@ function solve(problem) {
   for (let i = 0; i < pkgRows; i++) {
     pkgServings[i] = [];
     for (let j = 0; j < pkgCols; j++) {
+      let min = problem.packages[i][j] / (problem.recipe[i] * 1.1);
+      let max = problem.packages[i][j] / (problem.recipe[i] * 0.9);
       let minMax = [
-        Math.ceil(problem.packages[i][j] / (problem.recipe[i] * 1.1)),
-        Math.floor(problem.packages[i][j] / (problem.recipe[i] * 0.9))
+        // e.g. (1350 / ( 3 * 0.9 )) raw: 499.99999999999994
+        // should be 500, but floor of that would be 499
+        // due to precision errors in JS, check for delta (1e-9)
+        Math.abs(Math.floor(min) - min) < 1e-9 ? Math.floor(min) : Math.ceil(min),
+        Math.abs(Math.ceil(max) - max) < 1e-9 ? Math.ceil(max) : Math.floor(max)
       ];
+      DEBUG("  min = Math.ceil(", problem.packages[i][j], "/ (", problem.recipe[i], "*", 1.1 ,"))", "raw:", problem.packages[i][j] / (problem.recipe[i] * 1.1));
+      DEBUG("  max = Math.floor(", problem.packages[i][j], "/ (", problem.recipe[i], "*", 0.9 ,"))", "raw:", problem.packages[i][j] / (problem.recipe[i] * 0.9));
       if (minMax[0] <= minMax[1]) {
         pkgServings[i].push(minMax);
       } else {
-        DEBUG("  excluding min > max", minMax);
+        DEBUG("  excluding min > max", minMax, " package size: ", problem.packages[i][j], "  recipe amount: ", problem.recipe[i]);
       }
     }
     if (pkgServings[i].length < 1) {
@@ -89,40 +117,48 @@ function solve(problem) {
   // search for available kits based on first row
   // when first row is empty or any other row is empty, we're done
   let kits = [];
-  while(pkgServings[0].length > 0) {
-    let possibleKit = [pkgServings[0].shift()];
-    for(let row=1; row < pkgRows; row++) {
-      // Get rid of incompatible packages
-      while(pkgServings[row].length > 0 && pkgServings[row][0][1] < possibleKit[row - 1][0]) {
-        pkgServings[row].shift();
+  while (pkgServings[0].length > 0) {
+    let min = pkgServings[0][0][0];
+    let max = pkgServings[0][0][1];
+    let validKit = true;
+
+    for (let r = 0; r < pkgServings.length; r++) {
+      let row = pkgServings[r];
+      // current max < min ?
+      while (row.length && row[0][1] < min) {
+        row.shift();
       }
 
-      if (pkgServings[row].length < 1) return result;
-      // possibleKit[row] = pkgServings[row].shift();
-      
-      // TODO - finish here
-      
+      if (!row.length) {
+        return result;
+      }
+
+      // current min > max ?
+      if (row[0][0] > max) {
+        // shift all above rs
+        for (let shiftR = 0; shiftR < r; shiftR++) {
+          pkgServings[shiftR].shift();
+        }
+        validKit = false;
+        break;
+      }
+
+      // current value is within bounds of min & max
+      min = row[0][0] > min ? row[0][0] : min;
+      max = row[0][1] < max ? row[0][1] : max;
     }
-    
-    
-      
+
+    if (validKit) {
+      result++;
+      let kit = [];
+      pkgServings.forEach((row) => {
+        kit.push(row.shift());
+      });
+      kits.push(kit);
+      DEBUG('>>> Formed valid kit: ', kit);
+    }
   }
 
-  
   return result;
 }
 
-/**
- * MAIN
- */
-(function main() {
-
-  let problems = processInput();
-
-  problems.forEach((problem, i) => {
-    DEBUG("Solving case ", (i + 1), "\n", JSON.stringify(problem));
-    let result = solve(problem);
-    console.log("Case #" + (i + 1) + ": " + result);
-  });
-
-})();
