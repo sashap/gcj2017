@@ -16,57 +16,49 @@ function INFO()  { if (VERBOSE_LEVEL >= 1) console.log.apply(console, arguments)
 function DEBUG() { if (VERBOSE_LEVEL >= 2) console.log.apply(console, arguments); }
 const scanf = require('scanf');
 const readline = require('readline');
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
-});
 
 /**
  *  START
  */
-var inputLines = [];
+var rw = require('rw');
+var inputLines = rw.readFileSync("/dev/stdin", "utf8").split('\n');
 
-rl.on('line', function(line){
-  inputLines.push(line);
-}).on('close', function(){
 
-  let problems = [];
-  let T = parseInt(inputLines.shift());
-  for (let problem = 0; problem < T; problem++) {
-    let NPLine = inputLines.shift().split(' ');
-    let N = parseInt(NPLine[0]);
-    let P = parseInt(NPLine[1]);
+let problems = [];
+let T = parseInt(inputLines.shift());
+for (let problem = 0; problem < T; problem++) {
+  let NPLine = inputLines.shift().split(' ');
+  let N = parseInt(NPLine[0]);
+  let P = parseInt(NPLine[1]);
 
-    let recipe = inputLines.shift().split(' ').map((el) => parseInt(el));
-    let packages = [];
-    for (let Q = 0; Q < N; Q++) {
-      packages.push(inputLines.shift().split(' ').map((el) => parseInt(el)));
-    }
-    problems.push({
-      numIngredients: N,
-      numPackages: P,
-      recipe: recipe,
-      packages: packages
-    });
+  let recipe = inputLines.shift().split(' ').map((el) => parseInt(el));
+  let packages = [];
+  for (let Q = 0; Q < N; Q++) {
+    packages.push(inputLines.shift().split(' ').map((el) => parseInt(el)));
   }
-
-
-  INFO("Input");
-  INFO("-----");
-  INFO(inputLines.join('\n'));
-  INFO("");
-  DEBUG("Test Cases:", JSON.stringify(problems));
-
-  INFO("Output");
-  INFO("-----");
-  problems.forEach((problem, i) => {
-    DEBUG("Solving case ", (i + 1), "\n", JSON.stringify(problem));
-    let result = solve(problem);
-    console.log("Case #" + (i + 1) + ": " + result);
+  problems.push({
+    numIngredients: N,
+    numPackages: P,
+    recipe: recipe,
+    packages: packages
   });
+}
 
+
+INFO("Input");
+INFO("-----");
+INFO(inputLines.join('\n'));
+INFO("");
+DEBUG("Test Cases:", JSON.stringify(problems));
+
+INFO("Output");
+INFO("-----");
+problems.forEach((problem, i) => {
+  DEBUG("Solving case ", (i + 1), "\n", JSON.stringify(problem));
+  let result = solve(problem);
+  console.log("Case #" + (i + 1) + ": " + result);
 });
+
 
 function solve(problem) {
 
@@ -161,4 +153,3 @@ function solve(problem) {
 
   return result;
 }
-
