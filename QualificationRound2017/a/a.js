@@ -22,14 +22,11 @@ function DEBUG() { if (VERBOSE_LEVEL >= 2) console.log.apply(console, arguments)
 
 const rw = require('rw');
 let inputLines = rw.readFileSync("/dev/stdin", "utf8").split('\n');
-const BitArray = require('node-bitarray')
-
 
 let T = parseInt(inputLines[0]);
 let problems = inputLines.slice(1).map((line) => {
-
   return {
-    s: new BitArray(line.split(' ')[0].replace(/\+/g, '1').replace(/-/g, '0')),
+    s: line.split(' ')[0].split(''),
     k: parseInt(line.split(' ')[1])
   }
 });
@@ -37,12 +34,25 @@ let problems = inputLines.slice(1).map((line) => {
 INFO("Input\n-----\n" + inputLines.join('\n'));
     
 problems.forEach((problem, i) => {
-  DEBUG("Current BitArray: ", problem.s.toString(), "count(+):", problem.s.count());
+  DEBUG("Current S: ", problem.s.join(''), "count(+):", getCounts(problem.s));
   DEBUG("Solving case", (i + 1), ":", JSON.stringify(problem));
   let result = solve(problem);
   console.log("Case #" + (i + 1) + ": " + result);
 });
 
+
+function getCounts(arr) {
+  let initialCounts = {'+':0,'-':0};
+  return arr.reduce((acc, currVal) => { 
+      (currVal in acc) ? acc[currVal]++ : acc[currVal] = 1;
+      return acc; 
+    }, 
+    initialCounts );
+}
+
+function flipBits(arr, idx, k) {
+  return arr;
+}
 
 function solve(problem) {
 
