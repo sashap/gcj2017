@@ -57,23 +57,29 @@ function flip(arr, idx, k) {
   }
 }
 
+function allSame(arr) {
+  return arr.every(x => x === arr[0]);
+}
+
 function solve(problem) {
 
   let s = problem.s.slice(0);
   let k = problem.k;
   let y = 0;
-  let flipLimit = s.length * 10;
   let flipIndex = 0;
-  while( y < flipLimit && s.indexOf('-') > -1 ) {
+  let flipHistory = [];
+  while(s.indexOf('-') > -1 ) {
     flipIndex = s.indexOf('-');
     while (flipIndex > 0 && flipIndex + k > s.length) {
       flipIndex--;
     }
+    flipHistory.push(flipIndex);
+    if (flipHistory.length > 10 &&  allSame(flipHistory.slice(-10))) break;
     DEBUG(s.join(''), "flip:", y, "index:", flipIndex, "count:", count(s));
     flip(s, flipIndex, k);
     y++;
   }
   DEBUG(s.join(''), "Total flips:", y, "count:", count(s));
 
-  return y >= flipLimit ? "IMPOSSIBLE" : y;
+  return s.indexOf('-') > -1 ? "IMPOSSIBLE" : y;
 }
