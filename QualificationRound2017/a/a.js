@@ -74,6 +74,7 @@ function solve(problem) {
       flipIndex--;
     }
     flipHistory.push(flipIndex);
+    // Check if same index is being attempated for the 10th time, and if so, quit
     if (flipHistory.length > 10 &&  allSame(flipHistory.slice(-10))) break;
     DEBUG(s.join(''), "flip:", y, "index:", flipIndex, "count:", count(s));
     flip(s, flipIndex, k);
