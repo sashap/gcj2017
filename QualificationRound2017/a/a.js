@@ -24,24 +24,24 @@ const rw = require('rw');
 let inputLines = rw.readFileSync("/dev/stdin", "utf8").split('\n');
 
 let T = parseInt(inputLines[0]);
-let problems = inputLines.slice(1).map((line) => {
-  return {
-    s: line.split(' ')[0].split(''),
-    k: parseInt(line.split(' ')[1])
-  }
-});
+let problems = [];
+for(let l=1; l <= T; l++) {
+  problems.push({
+    s: inputLines[l].split(' ')[0].split(''),
+    k: parseInt(inputLines[l].split(' ')[1])
+  });
+}
 
 INFO("Input\n-----\n" + inputLines.join('\n'));
     
 problems.forEach((problem, i) => {
-  DEBUG("Current S: ", problem.s.join(''), "count(+):", getCounts(problem.s));
   DEBUG("Solving case", (i + 1), ":", JSON.stringify(problem));
   let result = solve(problem);
   console.log("Case #" + (i + 1) + ": " + result);
 });
 
 
-function getCounts(arr) {
+function count(arr) {
   let initialCounts = {'+':0,'-':0};
   return arr.reduce((acc, currVal) => { 
       (currVal in acc) ? acc[currVal]++ : acc[currVal] = 1;
@@ -50,13 +50,30 @@ function getCounts(arr) {
     initialCounts );
 }
 
-function flipBits(arr, idx, k) {
-  return arr;
+function flip(arr, idx, k) {
+  if (idx < 0 || idx >= arr.length || idx + k > arr.length) return;
+  for(let i = idx; i < idx + k; i++ ) {
+    arr[i] = arr[i] === '+' ? '-' : '+';
+  }
 }
 
 function solve(problem) {
 
+  let s = problem.s.slice(0);
+  let k = problem.k;
+  let y = 0;
+  let flipLimit = 10000;
+  let flipIndex = 0;
+  while( y < flipLimit && s.indexOf('-') > -1 ) {
+    flipIndex = s.indexOf('-');
+    while (flipIndex > 0 && flipIndex + k > s.length) {
+      flipIndex--;
+    }
+    DEBUG(s.join(''), "flip:", y, "index:", flipIndex, "count:", count(s));
+    flip(s, flipIndex, k);
+    y++;
+  }
+  DEBUG(s.join(''), "Total flips:", y, "count:", count(s));
 
-
-  return "IMPOSSIBLE";
+  return y >= flipLimit ? "IMPOSSIBLE" : y;
 }
