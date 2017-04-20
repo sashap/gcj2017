@@ -62,7 +62,7 @@ function solve(problem) {
   let s = problem.s.slice(0);
   let k = problem.k;
   let y = 0;
-  let flipLimit = 10000;
+  let flipLimit = s.length * 10;
   let flipIndex = 0;
   while( y < flipLimit && s.indexOf('-') > -1 ) {
     flipIndex = s.indexOf('-');
