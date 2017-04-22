@@ -5,6 +5,8 @@
 // C. Bathroom Stalls
 // Author: Sasha Parfenov
 
+/* jshint esversion: 6, node: true */
+"use strict";
 
 var readline = require('readline');
 var bigInt = require("big-integer");
@@ -114,14 +116,37 @@ function solveLoop(testCase) {
 // Solve individual test case mathematically
 function solveMath(testCase) {
   // Get remaining stall counts after last split
-  var n = bigInt(testCase.n);
-  var k = bigInt(testCase.k);
-  var remainingStalls = (n.divide(k)).divmod(2);
+  let n = bigInt(testCase.n);
+  let k = bigInt(testCase.k);
+  
+  // Level where Kth person occupies a stall
+  let level = Math.floor(Math.log2(k));
+  // Number of buckets on the current level
+  let levelSize = bigInt(2).pow(level);
+  let prevLevelsSum = levelSize.minus(1);
+  // Number of people for current level (can be viewed as bucket index Kth person will use)  1 <= levelPeople <= levelSize
+  let levelPeople = k.minus(prevLevelsSum);
 
-  DEBUG("N: ", n.toString(), " K:", k.toString(), " N/K: ", (n.divide(k)).toString(), " MOD2:  (",  remainingStalls.quotient.toString(), ", ", remainingStalls.remainder.toString(), ")");
+  DEBUG("N:", n.toString(), "K:", k.toString(), "level:", level.toString(), "levelSize:", levelSize.toString(), "levelPeople:", levelPeople.toString(), "prevLevelsSum:", prevLevelsSum.toString());
+  
+  let levelBucket = (n.minus(prevLevelsSum)).divmod(levelPeople);
+  let levelBucketMin = levelBucket.quotient;
+  let levelBucketMax = levelBucket.remainder > 0 ? levelBucketMin.plus(1) : levelBucketMin;
+  
+  let levelBucketMaxMinBoundary = levelBucket.remainder;
 
-  var left = remainingStalls.quotient;
-  var right = remainingStalls.remainder.greater(0) ? remainingStalls.quotient : remainingStalls.quotient.minus(1);
+  DEBUG("levelBucketMin:", levelBucketMin.toString(), "levelBucketMax:", levelBucketMax.toString(), "levelBucketMaxMinBoundary:", levelBucketMaxMinBoundary.toString());
+  
 
-  return [left.toString(), right.toString()];
+  
+  // var remainingStalls = (n.divide(k)).divmod(2);
+  // 
+  // DEBUG("N: ", n.toString(), " K:", k.toString(), " N/K: ", (n.divide(k)).toString(), " MOD2:  (",  remainingStalls.quotient.toString(), ", ", remainingStalls.remainder.toString(), ")");
+  // 
+  // var left = remainingStalls.quotient;
+  // var right = remainingStalls.remainder.greater(0) ? remainingStalls.quotient : remainingStalls.quotient.minus(1);
+  // 
+  // return [left.toString(), right.toString()];
+  
+  return [NaN,NaN];
 }
