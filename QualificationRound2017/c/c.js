@@ -129,7 +129,7 @@ function solveMath(testCase) {
   let levelPeople = k.minus(prevLevelsSum);
 
   DEBUG("N:", n.toString(), "K:", k.toString(), "level:", level.toString(), "levelBuckets:", levelBuckets.toString(), "levelPeople:", levelPeople.toString(), "prevLevelsSum:", prevLevelsSum.toString());
-  // total remaining stalls / 
+  // total remaining stalls / total buckets on current level
   let levelBucket = (n.minus(prevLevelsSum)).divmod(levelBuckets);
   let levelBucketMin = levelBucket.quotient;
   let levelBucketMax = (levelBucket.remainder).gt(0) ? levelBucketMin.plus(1) : levelBucketMin;
@@ -147,15 +147,6 @@ function solveMath(testCase) {
 
   let answer = [ lastPersonSpaceMax,  lastPersonSpaceMin];
 
-  
-  // var remainingStalls = (n.divide(k)).divmod(2);
-  // 
-  // DEBUG("N: ", n.toString(), " K:", k.toString(), " N/K: ", (n.divide(k)).toString(), " MOD2:  (",  remainingStalls.quotient.toString(), ", ", remainingStalls.remainder.toString(), ")");
-  // 
-  // var left = remainingStalls.quotient;
-  // var right = remainingStalls.remainder.greater(0) ? remainingStalls.quotient : remainingStalls.quotient.minus(1);
-  // 
-  // return [left.toString(), right.toString()];
   
   return answer;
 }
