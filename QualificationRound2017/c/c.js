@@ -10,6 +10,7 @@
 
 var readline = require('readline');
 var bigInt = require("big-integer");
+var Decimal = require('decimal.js');
 
 // Arguments processing
 var argv = require('yargs')
@@ -120,23 +121,31 @@ function solveMath(testCase) {
   let k = bigInt(testCase.k);
   
   // Level where Kth person occupies a stall
-  let level = Math.floor(Math.log2(k));
+  let level = bigInt((Decimal.floor(Decimal.log2(k.toString()))).toString());
   // Number of buckets on the current level
-  let levelSize = bigInt(2).pow(level);
-  let prevLevelsSum = levelSize.minus(1);
-  // Number of people for current level (can be viewed as bucket index Kth person will use)  1 <= levelPeople <= levelSize
+  let levelBuckets = bigInt(2).pow(level);
+  let prevLevelsSum = levelBuckets.minus(1);
+  // Number of people for current level (can be viewed as bucket index Kth person will use)  1 <= levelPeople <= levelBuckets
   let levelPeople = k.minus(prevLevelsSum);
 
-  DEBUG("N:", n.toString(), "K:", k.toString(), "level:", level.toString(), "levelSize:", levelSize.toString(), "levelPeople:", levelPeople.toString(), "prevLevelsSum:", prevLevelsSum.toString());
-  
-  let levelBucket = (n.minus(prevLevelsSum)).divmod(prevLevelsSum.plus(1));
+  DEBUG("N:", n.toString(), "K:", k.toString(), "level:", level.toString(), "levelBuckets:", levelBuckets.toString(), "levelPeople:", levelPeople.toString(), "prevLevelsSum:", prevLevelsSum.toString());
+  // total remaining stalls / 
+  let levelBucket = (n.minus(prevLevelsSum)).divmod(levelBuckets);
   let levelBucketMin = levelBucket.quotient;
-  let levelBucketMax = levelBucket.remainder > 0 ? levelBucketMin.plus(1) : levelBucketMin;
+  let levelBucketMax = (levelBucket.remainder).gt(0) ? levelBucketMin.plus(1) : levelBucketMin;
   
   let levelBucketMaxMinBoundary = levelBucket.remainder;
 
-  DEBUG("levelBucketMin:", levelBucketMin.toString(), "levelBucketMax:", levelBucketMax.toString(), "levelBucketMaxMinBoundary:", levelBucketMaxMinBoundary.toString());
-  
+    
+  let lastPersonBucketSize = (levelPeople.minus(levelBucketMaxMinBoundary)).gt(0) ? levelBucketMin : levelBucketMax;
+
+  DEBUG("levelBucketMin:", levelBucketMin.toString(), "levelBucketMax:", levelBucketMax.toString(), "levelBucketMaxMinBoundary:", levelBucketMaxMinBoundary.toString(), "lastPersonBucketSize:", lastPersonBucketSize.toString());
+
+  let lastPersonSpace = (lastPersonBucketSize.minus(1)).divmod(2);
+  let lastPersonSpaceMin = lastPersonSpace.quotient;
+  let lastPersonSpaceMax = lastPersonSpace.remainder.gt(0) ? lastPersonSpaceMin.plus(1) : lastPersonSpaceMin;
+
+  let answer = [ lastPersonSpaceMax,  lastPersonSpaceMin];
 
   
   // var remainingStalls = (n.divide(k)).divmod(2);
@@ -148,5 +157,5 @@ function solveMath(testCase) {
   // 
   // return [left.toString(), right.toString()];
   
-  return [NaN,NaN];
+  return answer;
 }
