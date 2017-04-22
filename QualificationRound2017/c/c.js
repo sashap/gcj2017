@@ -129,7 +129,7 @@ function solveMath(testCase) {
 
   DEBUG("N:", n.toString(), "K:", k.toString(), "level:", level.toString(), "levelSize:", levelSize.toString(), "levelPeople:", levelPeople.toString(), "prevLevelsSum:", prevLevelsSum.toString());
   
-  let levelBucket = (n.minus(prevLevelsSum)).divmod(levelPeople);
+  let levelBucket = (n.minus(prevLevelsSum)).divmod(prevLevelsSum.plus(1));
   let levelBucketMin = levelBucket.quotient;
   let levelBucketMax = levelBucket.remainder > 0 ? levelBucketMin.plus(1) : levelBucketMin;
   
